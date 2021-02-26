@@ -514,9 +514,12 @@ ControllerVolspotconnect.prototype.createConfigFile = async function () {
       initvol = volumestart;
     } else {
       // This will fail on first start - as stateMachine might not (yet) be up and running to write this value
+      // seems to always be 100?
+      // Are we reading it before the startup volume is being set?
       const curvol = fs.readFileSync('/tmp/volume').toString();
       if (curvol) {
-        initvol = curvol;
+        logger.debug(`/tmp/volume: ${curvol}`);
+        // initvol = curvol;
       }
     }
     const devicename = this.commandRouter.sharedVars.get('system.name');
