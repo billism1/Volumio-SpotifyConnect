@@ -519,7 +519,7 @@ ControllerVolspotconnect.prototype.createConfigFile = async function () {
       const curvol = fs.readFileSync('/tmp/volume').toString();
       if (curvol) {
         logger.debug(`/tmp/volume: ${curvol}`);
-        // initvol = curvol;
+        initvol = curvol;
       }
     }
     const devicename = this.commandRouter.sharedVars.get('system.name');
