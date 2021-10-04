@@ -25,6 +25,9 @@ if [ -f "${configpath}/config.json" ]; then
   sudo rm ${configpath}/config.json
 fi
 
+# shellcheck source=/dev/null
+source /etc/os-release
+
 ## Get the Daemon binary
 declare -A VLS_BIN=(
   [armv6l]="vollibrespot-armv6l.tar.xz"
@@ -34,13 +37,14 @@ declare -A VLS_BIN=(
   [x86_64]="vollibrespot-x86_64.tar.xz"
 )
 
+[[ ${VOLUMIO_ARCH} == armv8 ]] && VLS_BIN[aarch64]="vollibrespot-aarch64.tar.xz"
 # Find arch
-cpu=$(lscpu | awk 'FNR == 1 {print $2}')
-echo "Detected cpu architecture as $cpu"
+cpu=$(lscpu | lscpu | awk '/Architecture/{print $2}')
+echo "Detected CPU: ${cpu} -- $(uname -m) -- ${VOLUMIO_ARCH}"
 
 # Download and extract latest release
-cd $libpath
-if [ ${VLS_BIN[$cpu]+ok} ]; then
+cd "${libpath}"
+if [ ${VLS_BIN[${cpu}]+ok} ]; then
   # Check for the latest release first
   RELEASE_JSON=$(curl --silent "https://api.github.com/repos/ashthespy/vollibrespot/releases/latest")
   # Get a fixed version from the repo
@@ -48,31 +52,31 @@ if [ ${VLS_BIN[$cpu]+ok} ]; then
   LATEST_VER=$(jq -r '.tag_name' <<<"${RELEASE_JSON}")
 
   echo "Latest version: ${LATEST_VER} Requested version: ${VLS_VER}"
-  echo "Supported device (arch = $cpu), downloading required packages for vollibrespot $VLS_VER"
+  echo "Supported device (arch = ${cpu}), downloading required packages for vollibrespot $VLS_VER"
   RELEASE_URL="https://api.github.com/repos/ashthespy/vollibrespot/releases/tags/${VLS_VER}"
 
   DOWNLOAD_URL=$(curl --silent "${RELEASE_URL}" |
-    jq -r --arg VLS_BIN "${VLS_BIN[$cpu]}" '.assets[] | select(.name | contains($VLS_BIN)).browser_download_url')
+    jq -r --arg VLS_BIN "${VLS_BIN[${cpu}]}" '.assets[] | select(.name | contains($VLS_BIN)).browser_download_url')
   echo "Downloading file <${DOWNLOAD_URL}>"
 
   if [[ $use_local_ver == no ]]; then
-    curl -L --output "${VLS_BIN[$cpu]}" "${DOWNLOAD_URL}"
-  elif [[ -f ${VLS_BIN[$cpu]} ]]; then
+    curl -L --output "${VLS_BIN[${cpu}]}" "${DOWNLOAD_URL}"
+  elif [[ -f ${VLS_BIN[${cpu}]} ]]; then
     echo "Using local version"
   fi
 
   if [ $? -eq 0 ]; then
     echo "Extracting..."
-    ls -l "${VLS_BIN[$cpu]}"
-    tar -xf "${VLS_BIN[$cpu]}" &&
+    ls -l "${VLS_BIN[${cpu}]}"
+    tar -xf "${VLS_BIN[${cpu}]}" &&
       ./vollibrespot -v &&
-      rm "${VLS_BIN[$cpu]}"
+      rm "${VLS_BIN[${cpu}]}"
   else
     echo -e "Failed to download vollibrespot daemon. Check for internet connectivity/DNS issues. \nTerminating installation!"
     exit 1
   fi
 else
-  echo -e "Sorry, current device (arch = $cpu) is not supported! \nTerminating installation!"
+  echo -e "Sorry, current device (arch = ${cpu}) is not supported! \nTerminating installation!"
   exit 1
 fi
 
