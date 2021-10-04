@@ -15,10 +15,11 @@ const writeFile = (fileName, data) => fs.writeFile(fileName, data, 'utf8');
 const path = require('path');
 
 // Plugin modules and helpers
+const pluginName = 'SpotifyConnect';
 const SpotifyWebApi = require('spotify-web-api-node');
 const SpotConnCtrl = require('./SpotConnController').SpotConnEvents;
 const msgMap = require('./SpotConnController').msgMap;
-const logger = require('./logger');
+const logger = new (require('qloggy'))(pluginName);
 // Global
 let seekTimer;
 

@@ -20,12 +20,12 @@
     "bundledDependencies": [
         "spotify-web-api-node"
     ],
-    "dependencies": {
-        "chalk": "^3.0.0",
+    "dependencies": {        
         "fs-extra": "^8.1.0",
         "kew": "^0.7.0",
         "spotify-web-api-node": "https://github.com/ashthespy/spotify-web-api-node",
-        "v-conf": "^1.4.2"
+        "v-conf": "^1.4.2",
+		"qloggy": "https://github.com/ashthespy/qloggy"
     },
     "devDependencies": {
         "semistandard": "14.2.0"
