@@ -1,13 +1,19 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-echo "Unistalling volspotconnect2 dependencies"
+# Force bash shell
+if [ -z "$BASH" ]; then
+  echo "Launching a bash shell"
+  exec bash "$0"
+fi
+set -eo pipefail
 
-echo "Removing volspotconnect2"
+name="volspotconnect2"
 
-systemctl stop volspotconnect2
+echo "Uninstalling ${name} dependencies"
 
-sudo rm /etc/systemd/system/volspotconnect2.service
-rm /data/configuration/music_service/volspotconnect2/config.json
+systemctl stop ${name}
+rm /etc/systemd/system/${name}.service
+rm /data/configuration/music_service/${name}/config.json
 
 echo "Done"
 echo "pluginuninstallend"

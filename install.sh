@@ -82,7 +82,6 @@ fi
 
 ## Install the service
 sudo tar -xvf ${name}.service.tar -C /
-sudo chmod +x /data/plugins/music_service/${name}/onstart1.sh
 echo "${name} installed"
 #required to end the plugin install
 echo "plugininstallend"
